@@ -33,10 +33,11 @@ class Polynomial():
         """
             Generates SECRET_BLOCK shadows
         """
-        assert SECRET_BLOCK <= 2 ** (self.BLOCK_SIZE * 8)
+        assert SECRET_BLOCK <= 2 ** (self.BLOCK_SIZE * 8) # Less then 32 bytes
 
         blocks = []
 
+        # Calculating polynomials
         POLYLEN = len(self.POLYNOMIAL_COEFFICIENTS)
         for PARTY in range(1, self.PARTIES + 1):
             polynomial     = [self.POLYNOMIAL_COEFFICIENTS[i] * (PARTY ** (POLYLEN - i)) for i in range(POLYLEN)]
@@ -53,7 +54,9 @@ class Polynomial():
 
 class ShareSecret():
     def __init__(self, THRESHOLD, PARTIES):
-
+        """
+            Shamir Secret Share Scheme
+        """
         assert THRESHOLD > 0
         assert PARTIES > 0
         assert PARTIES >= THRESHOLD
@@ -65,6 +68,10 @@ class ShareSecret():
 
 
     def generate(self, SECRET):
+        """
+            generate function takes SECRET string and returns
+            an array of hexadecimal encoded SECRET shadows
+        """
 
         assert type(SECRET) == str
 
@@ -72,6 +79,7 @@ class ShareSecret():
         shift           = self.BLOCK_SIZE * 2 # Hex 4bit per char
         blocks_secret   = [hex_secret[i: i + shift] for i in range(0, len(hex_secret), shift)]
 
+        # Generate block shadows
         blocks_int      = []
         for i in range(len(blocks_secret)):
             poly  = Polynomial(self.THRESHOLD, self.PARTIES)
@@ -79,7 +87,7 @@ class ShareSecret():
 
             blocks_int.append(block)
 
-
+        # Convert shadows to hex
         blocks_hex = []
         for block in blocks_int:
             block_hex = [hexi(self.SHADOW_SIZE * 2, + block['prime']) + hexi(self.SHADOW_SIZE * 2, block_shadow) 
@@ -87,6 +95,7 @@ class ShareSecret():
 
             blocks_hex.append(block_hex)
 
+        # Map merge blocks
         shadows = []
         while len(blocks_hex) > 0:
             if not len(shadows):
@@ -95,6 +104,7 @@ class ShareSecret():
 
             shadows = list(map(lambda a, b: a + b, shadows, blocks_hex.pop()))
 
+        # Index blocks
         for i in range(len(shadows)):
             shadows[i] = hexi(2, i + 1) + shadows[i]
 
