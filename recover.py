@@ -1,3 +1,15 @@
+from decimal import Decimal, getcontext
+
+getcontext().prec = 1000 # VERY HIGH Precision 
+
+def hexi(WIDTH, INT):
+    """
+        Converts int to hex with padding
+    """
+    assert WIDTH > 0
+    return ('%0' + str(WIDTH) + 'X') % INT
+
+
 class Lagrange():
     def __init__(self):
         pass
@@ -61,7 +73,7 @@ class Lagrange():
 
         return self.antidiagonal_polynomial_reduce(polynomial_table)
 
-
+    # https://en.wikipedia.org/wiki/Lagrange_polynomial
     def lagrange_interpolate(self, xi, points):
 
         monomials = []
@@ -88,11 +100,16 @@ class Lagrange():
         p      = block['prime']
         points = block['points']
 
+        M = 0
         for point in points:
             point['li'] = self.lagrange_interpolate(point['id'], points)
 
-        print(points)
+            coof = point['li'].pop() 
+            M   += Decimal.from_float(coof) * Decimal(point['shadow'])
 
+        SECRET = round(M) % p
+
+        return SECRET
 
 class RecoverSecret():
     def __init__(self):
@@ -161,4 +178,6 @@ class RecoverSecret():
             block_recovered = interpolator.recover(block)
             blocks_recovered.append(block_recovered)
 
-        return blocks_fomated
+
+        blocks_recovered_hex = list(map(lambda x: hexi(1, x), blocks_recovered))
+        return blocks_recovered_hex
