@@ -4,7 +4,6 @@ class Lagrange():
 
     # https://en.wikipedia.org/wiki/FOIL_method#Table_as_an_alternative_to_FOIL
     def antidiagonal_polynomial_reduce(self, polynomial_table):
-
         antidiagonals = []
 
         x_len = len(polynomial_table)
@@ -21,15 +20,15 @@ class Lagrange():
             or (y + y_dir > y_len and x == x_len - 1):
                 break
 
+            antidiagonal.append(polynomial_table[x][y])
 
-            antidiagonal.append(table[x][y])
-
-            if (x + x_dir >= x_len or x + x_dir < 0):
+            if (x + x_dir >= x_len or x + x_dir < 0) and (y + y_dir < y_len):
                 x_dir, y_dir = y_dir, x_dir
                 y   += 1
 
                 antidiagonals.append(antidiagonal)
                 antidiagonal = []
+
                 continue
 
             elif (y + y_dir >= y_len or y + y_dir < 0):
@@ -72,8 +71,18 @@ class Lagrange():
                 denominator = xi - xj
                 monomials.append([1 / denominator, xj / denominator])
 
-        return monomials
+        polynomial = []
 
+        while len(monomials):
+            monomial = monomials.pop()
+
+            if polynomial == []:
+                polynomial = monomial
+                continue
+
+            polynomial = self.table_polynomial_expansion(polynomial, monomial)
+
+        return polynomial
 
     def recover(self, block):
         p      = block['prime']
