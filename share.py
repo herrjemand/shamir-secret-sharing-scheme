@@ -14,20 +14,21 @@ class Polynomial():
             Shamir THRESHOLD size polynomial constructor
         """
         assert THRESHOLD > 0
-        assert PARTIES > 0
-        assert PARTIES >= THRESHOLD
+        assert PARTIES   > 0
+        assert PARTIES   >= THRESHOLD
 
-        self.THRESHOLD       = THRESHOLD
-        self.PARTIES         = PARTIES
+        self.THRESHOLD         = THRESHOLD
+        self.PARTIES           = PARTIES
 
-        self.BLOCK_SIZE      = 30 # 30 bytes
-        self.PRIME_SIZE      = 32 # 32 bytes
-        self.COOFICIENT_SIZE = self.PRIME_SIZE + 8 # Cooficients always 8 byte larger then PRIME
-        self.SHADOW_SIZE     = 32 # 32 bytes
+        self.BLOCK_SIZE        = 30 # 30 bytes
+        self.PRIME_SIZE        = 32 # 32 bytes
+        self.COOFICIENT_SIZE   = self.PRIME_SIZE + 8 # Cooficients always 8 byte larger then PRIME
+        self.SHADOW_SIZE       = 32 # 32 bytes
+        self.POLYNOMIAL_DEGREE = self.THRESHOLD - 1
 
-        self.P               = number.getPrime(self.PRIME_SIZE * 8)
+        self.P                 = number.getPrime(self.PRIME_SIZE * 8)
 
-        self.POLYNOMIAL_COEFFICIENTS = [int(urandom(self.COOFICIENT_SIZE).hex(), 16) for i in range(THRESHOLD)]
+        self.POLYNOMIAL_COEFFICIENTS = [int(urandom(self.COOFICIENT_SIZE).hex(), 16) for i in range(self.POLYNOMIAL_DEGREE)]
 
     def generate(self, SECRET_BLOCK):
         """
@@ -58,8 +59,8 @@ class ShareSecret():
             Shamir Secret Share Scheme
         """
         assert THRESHOLD > 0
-        assert PARTIES > 0
-        assert PARTIES >= THRESHOLD
+        assert PARTIES   > 0
+        assert PARTIES   >= THRESHOLD
 
         self.THRESHOLD   = THRESHOLD
         self.PARTIES     = PARTIES
